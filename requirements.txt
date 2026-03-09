@@ -1,0 +1,11 @@
+# Orchestration and AI agent tools
+crewai
+langchain-google-genai
+
+# web framework and utilities
+fastapi[standard]
+uvicorn
+
+# utilities
+python-dotenv
+pydantic
