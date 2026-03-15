@@ -1,4 +1,17 @@
-EXAMPLE BELLOW
-This is a finance crew for daily stock briefs.
-Focus on clear, actionable insights.
-Keep briefs concise and beginner-friendly.
+PROJETO: JURYSCAN (Serviço de IA para Auditoria de CNIS)
+
+TECNOLOGIAS:
+- Orquestrador: CrewAI (Padrão CLI / YAML)
+- API: FastAPI (Python)
+- Modelo: Google Gemini 1.5
+- Integração: Recebe Base64 do Java (Spring Boot) e processa em memória.
+
+DIRETRIZES DE ORQUESTRAÇÃO:
+1. PROCESSAMENTO EM MEMÓRIA: Não salvar arquivos. O Base64 deve ser transformado em texto e passado para os agentes.
+2. PRECISÃO TÉCNICA: O foco total é no CNIS. Identificar erros de datas, vínculos duplicados e períodos em aberto.
+3. VALIDAÇÃO DE IDENTIDADE: Cruzar CPF e Nome da Mãe do cabeçalho do documento.
+4. AGENTES: Seguir a estrutura de 4 agentes (Extrator, Auditor Identidade, Auditor Previdenciário, Relator).
+
+ESTILO DE RESPOSTA:
+- O relatório final deve ser gerado em duas camadas: uma técnica (para advogados) e uma simplificada (para o cidadão).
+- O output final deve ser um JSON estruturado para que o Backend Java consiga ler facilmente.

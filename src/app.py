@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from dotenv import load_dotenv
 
-from .routes import base_router
+from .routes import base_router, analyze_router
 
 # Load environment variables from .env file
 load_dotenv()
@@ -16,3 +16,4 @@ app = FastAPI(
 # routes
 base_prefix = "/api/v1"
 app.include_router(base_router, prefix=base_prefix)
+app.include_router(analyze_router, prefix=base_prefix)

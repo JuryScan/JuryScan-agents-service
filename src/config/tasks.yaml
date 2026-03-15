@@ -1,1 +1,32 @@
 # Define agent tasks configuration
+tarefa_extracao:
+  description: >
+    Extrair de forma estruturada o Nome, CPF, Nome da Mãe e a lista completa de vínculos 
+    (Empresa, Data de Início, Data de Fim) do texto extraído: {conteudo_cnis}.
+  expected_output: >
+    Um dicionário estruturado contendo os dados do cabeçalho e a lista de empregos.
+  agent: especialista_extracao
+
+tarefa_validacao_identidade:
+  description: >
+    Verificar se o CPF extraído está regular e se os dados de filiação batem com os registros. 
+    Sinalizar erros cadastrais básicos.
+  expected_output: >
+    Status de regularidade do CPF e validação dos dados de identificação.
+  agent: auditor_identidade
+
+tarefa_auditoria_erros:
+  description: >
+    Analisar a lista de vínculos em busca de: 1. Períodos sem data de demissão; 
+    2. Vínculos duplicados na mesma data; 3. Datas de fim anteriores ao início.
+  expected_output: >
+    Uma lista detalhada de inconsistências lógicas encontradas no histórico contributivo.
+  agent: auditor_previdenciario
+
+tarefa_geracao_relatorio:
+  description: >
+    Consolidar todos os achados em um relatório final. O relatório deve conter uma seção 
+    técnica (JSON) para o sistema e uma explicação textual clara para o usuário.
+  expected_output: >
+    Um JSON final contendo a análise completa, separada por linguagem jurídica e comum.
+  agent: gerador_relatorio
