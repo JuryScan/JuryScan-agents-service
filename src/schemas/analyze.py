@@ -1,9 +1,22 @@
 from pydantic import BaseModel
+from typing import Optional, Any
 
-class AnalyzeRequest(BaseModel):
-    def __init__(self, text: str):
-        self.text = text
 
 class AnalyzeResponse(BaseModel):
-    def __init__(self, response: str):
-        self.response = response
+    """Resposta da análise de documento CNIS"""
+    status: str
+    message: str
+    result: Optional[Any] = None
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "status": "success",
+                "message": "Análise concluída com sucesso",
+                "result": {
+                    "status_geral": "completo",
+                    "sumario_juridico": {},
+                    "sumario_comum": {}
+                }
+            }
+        }

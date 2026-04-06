@@ -1,5 +1,5 @@
 # Orchestration and AI agent tools
-crewai
+crewai[1.13.0]
 langchain-google-genai
 
 # web framework and utilities
@@ -9,3 +9,4 @@ uvicorn
 # utilities
 python-dotenv
 pydantic
+pdfplumber

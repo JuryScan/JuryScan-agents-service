@@ -1,8 +1,9 @@
 # Define agent tasks configuration
 tarefa_extracao:
   description: >
-    Extrair de forma estruturada o Nome, CPF, Nome da Mãe e a lista completa de vínculos 
-    (Empresa, Data de Início, Data de Fim) do texto extraído: {conteudo_cnis}.
+    Use a ferramenta 'tool_extract_text_from_pdf' para extrair o texto do arquivo PDF fornecido em base64: {conteudo_pdf_base64}.
+    Depois extrai de forma estruturada o Nome, CPF, Nome da Mãe e a lista completa de vínculos 
+    (Empresa, Data de Início, Data de Fim) do texto extraído.
   expected_output: >
     Um dicionário estruturado contendo os dados do cabeçalho e a lista de empregos.
   agent: especialista_extracao
