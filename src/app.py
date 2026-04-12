@@ -1,9 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
-from .core import Settings
+from .core import Settings, get_custom_openapi
 
 from .routes import base_router, analyze_router
+from .middlewares import verify_api_key_middleware
 
 api_settings = Settings() # type: ignore
 app = FastAPI(
@@ -11,6 +12,9 @@ app = FastAPI(
     description=api_settings.api_description,
     version=api_settings.api_version
 )
+
+# Configurar OpenAPI personalizado
+app.openapi = get_custom_openapi(app, api_settings)
 
 # CORS config (via middleware)
 app.add_middleware(
@@ -22,5 +26,5 @@ app.add_middleware(
 )
 
 # Adicionar routers
-app.include_router(base_router)
-app.include_router(analyze_router)
+app.include_router(base_router, dependencies=[Depends(verify_api_key_middleware)])
+app.include_router(analyze_router, dependencies=[Depends(verify_api_key_middleware)])
