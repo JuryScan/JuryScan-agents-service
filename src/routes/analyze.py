@@ -3,7 +3,10 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 from ..schemas.analyze import AnalyzeResponse
 from ..services.analyze import AnalyzeService
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/api/v1",
+    tags=["analyze"]
+)
 analyze_service = AnalyzeService()
 
 @router.post("/analyze", response_model=AnalyzeResponse)
