@@ -5,8 +5,10 @@ from crewai.agents.agent_builder.base_agent import BaseAgent
 
 from typing import List
 
-from .core import api_config
+from .core import Settings
 from .tools import tool_extract_text_from_pdf
+
+api_settings = Settings() # type: ignore
 
 @CrewBase
 class JuryScanAgentsCrew():
@@ -19,8 +21,8 @@ class JuryScanAgentsCrew():
     def gemini_llm(self) -> LLM:
         """Configuração do modelo de linguagem Gemini para os agentes do JuryScan"""
         return LLM(
-            model=api_config.LLM_MODEL,
-            api_key=api_config.GOOGLE_API_KEY
+            model=api_settings.llm_model,
+            api_key=api_settings.google_api_key
         )
 
     # Definição de agentes ===============

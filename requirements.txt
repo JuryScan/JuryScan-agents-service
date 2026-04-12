@@ -9,4 +9,5 @@ uvicorn
 # utilities
 python-dotenv
 pydantic
+pydantic-settings
 pdfplumber

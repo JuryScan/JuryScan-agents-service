@@ -1,5 +1,5 @@
-from .config import api_config
+from .settings import Settings
 
 __all__ = [
-    "api_config"
+    "Settings"
 ]

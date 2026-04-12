@@ -7,13 +7,7 @@ from crewai.tools import tool
 @tool
 def tool_extract_text_from_pdf(pdf_content_base64: str) -> str:
     """
-    Extrai texto de um arquivo PDF recebido em formato base64.
-    
-    Args:
-        pdf_content_base64: Conteúdo do arquivo PDF em formato base64 string
-        
-    Returns:
-        str: Texto extraído do PDF com indicação de páginas
+    Extrai texto de um arquivo PDF recebido em formato base64, retornando o conteúdo extraído como string.
     """
     try:
         # Decodifica base64 para bytes
