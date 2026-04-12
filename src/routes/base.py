@@ -4,4 +4,4 @@ router = APIRouter()
 
 @router.get("/")
 async def root():
-    return {"message": "Welcome to the JuryScan Agents Service!"}
+    return {"message": "Bem-vindo ao serviço de Orquestração de Agentes do JuryScan! Docs em /docs"}
