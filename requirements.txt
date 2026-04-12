@@ -1,10 +1,10 @@
 # Orchestration and AI agent tools
 crewai[1.13.0]
-langchain-google-genai
 
 # web framework and utilities
 fastapi[standard]
 uvicorn
+gunicorn
 
 # utilities
 python-dotenv
