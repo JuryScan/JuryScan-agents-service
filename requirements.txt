@@ -1,13 +1,13 @@
 # Orchestration and AI agent tools
-crewai[1.13.0]
+crewai==1.10.1
 
 # web framework and utilities
-fastapi[standard]
-uvicorn
-gunicorn
+fastapi==0.135.3
+uvicorn==0.43.0
 
 # utilities
-python-dotenv
-pydantic
-pydantic-settings
-pdfplumber
+python-dotenv==1.1.1
+pydantic==2.11.10
+pydantic-settings==2.10.1
+pdfplumber==0.11.9
+tiktoken==0.8.0
