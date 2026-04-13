@@ -1,5 +1,6 @@
 # Orchestration and AI agent tools
 crewai==1.10.1
+langchain-google-genai==4.2.1
 
 # web framework and utilities
 fastapi==0.135.3
