@@ -1,7 +1,7 @@
 # Define agent tasks configuration
 tarefa_extracao:
   description: >
-    Use a ferramenta 'tool_extract_text_from_pdf' para extrair o texto do arquivo PDF fornecido em base64: {conteudo_pdf_base64}.
+    Use a ferramenta 'tool_extract_text_from_pdf' para extrair o texto do arquivo PDF fornecido em base64: {conteudo_cnis}.
     Depois extrai de forma estruturada o Nome, CPF, Nome da Mãe e a lista completa de vínculos 
     (Empresa, Data de Início, Data de Fim) do texto extraído.
   expected_output: >
@@ -26,8 +26,30 @@ tarefa_auditoria_erros:
 
 tarefa_geracao_relatorio:
   description: >
-    Consolidar todos os achados em um relatório final. O relatório deve conter uma seção 
-    técnica (JSON) para o sistema e uma explicação textual clara para o usuário.
+    Consolidar todos os achados em um relatório final estruturado.
+    
+    IMPORTANTE: Sua resposta DEVE ser um JSON válido (e APENAS JSON) com a seguinte estrutura exata:
+    {
+      "validacoes": {
+        "cpf_regular": boolean,
+        "dados_identidade_validos": boolean,
+        "mensagens_validacao": ["string"]
+      },
+      "inconsistencias": [
+        {"descricao": "string", "confianca": number entre 0 e 1}
+      ],
+      "relatorio": {
+        "sumario_juridico": "string",
+        "sumario_comum": "string"
+      }
+    }
+    
+    REGRAS CRÍTICAS:
+    - Retorne APENAS JSON puro, sem nenhum texto antes ou depois
+    - NÃO coloque o JSON dentro de blocos de código markdown (```json ou ```)
+    - NÃO adicione nenhuma explicação, comentário ou prefácio
+    - O primeiro caractere deve ser { e o último deve ser }
+    
   expected_output: >
-    Um JSON final contendo a análise completa, separada por linguagem jurídica e comum.
+    Um JSON válido (SEM blocos de código markdown) contendo: validacoes, inconsistencias e relatorio com sumario_juridico e sumario_comum.
   agent: gerador_relatorio
