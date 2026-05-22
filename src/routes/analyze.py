@@ -1,4 +1,6 @@
 """Rotas para análise de documentos CNIS"""
+import asyncio
+
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from ..schemas.analyze import AnalyzeResponse
 from ..services.analyze import AnalyzeService
@@ -31,8 +33,8 @@ async def analyze(file: UploadFile = File(...)) -> AnalyzeResponse:
                 detail="Arquivo vazio"
             )
         
-        # Passa para o serviço de análise
-        result = analyze_service.analyze_cnis(content)
+        # Passa para o serviço de análise (em threadpool — a crew é síncrona e bloqueante)
+        result = await asyncio.to_thread(analyze_service.analyze_cnis, content)
         
         return AnalyzeResponse(
             status=result.get("status", "error"),
