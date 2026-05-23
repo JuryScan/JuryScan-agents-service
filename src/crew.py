@@ -1,19 +1,20 @@
 # Agents crew definition for JuryScan system
+from typing import List
+
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task, llm
 from crewai.agents.agent_builder.base_agent import BaseAgent
 
-from typing import List
-
 from .core import Settings
-from .tools import tool_extract_text_from_pdf
+from .schemas.analyze import AnalysisResult
 
-api_settings = Settings() # type: ignore
+api_settings = Settings()  # type: ignore
+
 
 @CrewBase
 class JuryScanAgentsCrew():
     """JuryScan Agents Crew"""
-    
+
     agents: List[BaseAgent]
     tasks: List[Task]
 
@@ -31,33 +32,38 @@ class JuryScanAgentsCrew():
         """Agente especializado em extração de dados estruturados do CNIS"""
         return Agent(
             config=self.agents_config['especialista_extracao'],  # type: ignore[index]
-            tools=[tool_extract_text_from_pdf]
+            max_iter=3,
+            max_retry_limit=1,
         )
-    
+
     @agent
     def auditor_identidade(self) -> Agent:
         """Agente responsável por validar dados de identidade e conformidade"""
         return Agent(
             config=self.agents_config['auditor_identidade'],  # type: ignore[index]
-            tools=[]
+            max_iter=3,
+            max_retry_limit=1,
         )
-    
+
     @agent
     def auditor_previdenciario(self) -> Agent:
         """Agente encarregado de auditar o histórico previdenciário em busca de inconsistências"""
         return Agent(
             config=self.agents_config['auditor_previdenciario'],  # type: ignore[index]
-            tools=[]
+            max_iter=3,
+            max_retry_limit=1,
         )
-    
+
     @agent
     def gerador_relatorio(self) -> Agent:
         """Agente dedicado à geração do relatório final abrangente"""
         return Agent(
             config=self.agents_config['gerador_relatorio'],  # type: ignore[index]
+            max_iter=3,
+            max_retry_limit=1,
             verbose=True
         )
-    
+
     # Definição de tasks ===============
     @task
     def tarefa_extracao(self) -> Task:
@@ -65,26 +71,27 @@ class JuryScanAgentsCrew():
         return Task(
             config=self.tasks_config['tarefa_extracao'],  # type: ignore[index]
         )
-    
+
     @task
     def tarefa_validacao_identidade(self) -> Task:
         """Validate identity and compliance data"""
         return Task(
             config=self.tasks_config['tarefa_validacao_identidade'],  # type: ignore[index]
         )
-    
+
     @task
     def tarefa_auditoria_erros(self) -> Task:
         """Audit social security history for inconsistencies"""
         return Task(
             config=self.tasks_config['tarefa_auditoria_erros'],  # type: ignore[index]
         )
-    
+
     @task
     def tarefa_geracao_relatorio(self) -> Task:
         """Generate final comprehensive report"""
         return Task(
             config=self.tasks_config['tarefa_geracao_relatorio'],  # type: ignore[index]
+            output_pydantic=AnalysisResult,
         )
 
     # Definição Crew ============

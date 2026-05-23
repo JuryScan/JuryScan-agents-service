@@ -1,16 +1,20 @@
 # Define agent tasks configuration
 tarefa_extracao:
   description: >
-    Use a ferramenta 'tool_extract_text_from_pdf' para extrair o texto do arquivo PDF fornecido em base64: {conteudo_cnis}.
-    Depois extrai de forma estruturada o Nome, CPF, Nome da Mãe e a lista completa de vínculos 
-    (Empresa, Data de Início, Data de Fim) do texto extraído.
+    A partir do conteúdo textual do CNIS abaixo, extraia de forma estruturada o Nome,
+    CPF, Nome da Mãe e a lista completa de vínculos (Empresa, Data de Início, Data de Fim).
+
+    Conteúdo do CNIS:
+    ---
+    {conteudo_cnis}
+    ---
   expected_output: >
-    Um dicionário estruturado contendo os dados do cabeçalho e a lista de empregos.
+    Um dicionário estruturado contendo os dados do cabeçalho e a lista de vínculos empregatícios.
   agent: especialista_extracao
 
 tarefa_validacao_identidade:
   description: >
-    Verificar se o CPF extraído está regular e se os dados de filiação batem com os registros. 
+    Verificar se o CPF extraído está regular e se os dados de filiação batem com os registros.
     Sinalizar erros cadastrais básicos.
   expected_output: >
     Status de regularidade do CPF e validação dos dados de identificação.
@@ -18,7 +22,7 @@ tarefa_validacao_identidade:
 
 tarefa_auditoria_erros:
   description: >
-    Analisar a lista de vínculos em busca de: 1. Períodos sem data de demissão; 
+    Analisar a lista de vínculos em busca de: 1. Períodos sem data de demissão;
     2. Vínculos duplicados na mesma data; 3. Datas de fim anteriores ao início.
   expected_output: >
     Uma lista detalhada de inconsistências lógicas encontradas no histórico contributivo.
@@ -26,30 +30,13 @@ tarefa_auditoria_erros:
 
 tarefa_geracao_relatorio:
   description: >
-    Consolidar todos os achados em um relatório final estruturado.
-    
-    IMPORTANTE: Sua resposta DEVE ser um JSON válido (e APENAS JSON) com a seguinte estrutura exata:
-    {
-      "validacoes": {
-        "cpf_regular": boolean,
-        "dados_identidade_validos": boolean,
-        "mensagens_validacao": ["string"]
-      },
-      "inconsistencias": [
-        {"descricao": "string", "confianca": number entre 0 e 1}
-      ],
-      "relatorio": {
-        "sumario_juridico": "string",
-        "sumario_comum": "string"
-      }
-    }
-    
-    REGRAS CRÍTICAS:
-    - Retorne APENAS JSON puro, sem nenhum texto antes ou depois
-    - NÃO coloque o JSON dentro de blocos de código markdown (```json ou ```)
-    - NÃO adicione nenhuma explicação, comentário ou prefácio
-    - O primeiro caractere deve ser { e o último deve ser }
-    
+    Consolidar todos os achados das tarefas anteriores em um relatório final estruturado conforme o schema definido.
+
+    Preencha:
+    - 'validacoes': status do CPF, validade dos dados de identidade e mensagens explicativas.
+    - 'inconsistencias': cada erro detectado no histórico previdenciário com uma 'confianca' entre 0 e 1.
+    - 'relatorio.sumario_juridico': linguagem técnica para advogado.
+    - 'relatorio.sumario_comum': linguagem clara para o cidadão.
   expected_output: >
-    Um JSON válido (SEM blocos de código markdown) contendo: validacoes, inconsistencias e relatorio com sumario_juridico e sumario_comum.
+    Um objeto AnalysisResult contendo validacoes, inconsistencias e relatorio.
   agent: gerador_relatorio
