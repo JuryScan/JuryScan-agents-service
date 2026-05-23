@@ -30,13 +30,26 @@ tarefa_auditoria_erros:
 
 tarefa_geracao_relatorio:
   description: >
-    Consolidar todos os achados das tarefas anteriores em um relatório final estruturado conforme o schema definido.
+    Consolidar todos os achados das tarefas anteriores em um relatório final estruturado e auto-contido.
 
-    Preencha:
-    - 'validacoes': status do CPF, validade dos dados de identidade e mensagens explicativas.
-    - 'inconsistencias': cada erro detectado no histórico previdenciário com uma 'confianca' entre 0 e 1.
-    - 'relatorio.sumario_juridico': linguagem técnica para advogado.
-    - 'relatorio.sumario_comum': linguagem clara para o cidadão.
+    Preencha os seguintes campos obrigatoriamente:
+    - 'titulo': um título descritivo que resuma os achados principais (ex: "Análise do CNIS - X Inconsistências Detectadas")
+    - 'descricaoGeral': resumo dos achados (ex: "Foi identificada(s) X inconsistência(s) no histórico previdenciário")
+    - 'dados_extraidos': objeto contendo os dados básicos extraídos:
+      * 'nome': nome completo do segurado
+      * 'cpf': CPF do segurado (formato ou bruto)
+      * 'nome_mae': nome da mãe
+      * 'total_vinculos': número total de vínculos encontrados
+      * 'periodo_inicial': data do vínculo mais antigo (YYYY-MM-DD)
+      * 'periodo_final': data do vínculo mais recente (YYYY-MM-DD)
+    - 'failures': array com cada falha/inconsistência encontrada, contendo:
+      * 'titulo': nome breve da falha
+      * 'severidade': um dos valores [ALTA, MEDIA, BAIXA, INFO]
+      * 'descricao': descrição técnica do problema
+      * 'sugestaoCorrecao': recomendação de como resolver
+      * 'confianca': valor entre 0 e 1 representando o nível de certeza
+    - 'relatorio_sumario_juridico': análise técnica em linguagem jurídica para advogado
+    - 'sumario': linguagem clara e acessível para o cidadão comum
   expected_output: >
-    Um objeto AnalysisResult contendo validacoes, inconsistencias e relatorio.
+    Um objeto AnalysisResult auto-contido contendo: titulo, descricaoGeral, dados_extraidos, failures (array estruturado), relatorio_sumario_juridico e sumario.
   agent: gerador_relatorio
