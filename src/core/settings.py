@@ -22,5 +22,5 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict( # type: ignore
         env_file=env_path,
-        env_file_eoncoding='utf-8'
+        env_file_encoding='utf-8'
     )

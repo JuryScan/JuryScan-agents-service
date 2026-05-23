@@ -1,49 +1,56 @@
 """Serviço de análise de documentos CNIS usando uma crew de agentes"""
-from typing import Dict, Any
+import io
 import logging
-import base64
+from typing import Any, Dict
+
+import pdfplumber
+
 from ..crew import JuryScanAgentsCrew
+from ..schemas.analyze import AnalysisResult
 
 logger = logging.getLogger(__name__)
+
 
 class AnalyzeService:
     """Service para gerenciar análise de documentos CNIS com a crew de agentes"""
 
     def __init__(self):
-        """Inicializa o serviço com a crew"""
         self.crew = JuryScanAgentsCrew()
 
-    def analyze_cnis(self, pdf_content: bytes) -> Dict[str, Any]:
-        """
-        Analisa um documento CNIS usando a crew de agentes.
-        O agente especialista usará a ferramenta de extração para processar o PDF.
+    @staticmethod
+    def _extract_text(pdf_content: bytes) -> str:
+        with pdfplumber.open(io.BytesIO(pdf_content)) as pdf:
+            texto = "\n".join((page.extract_text() or "") for page in pdf.pages)
+        if not texto.strip():
+            raise ValueError("Não foi possível extrair texto do PDF")
+        return texto
 
-        Ao final do processo, o agente gerador de relatório compilará um resumo jurídico e um sumário comum.
-        """
+    def analyze_cnis(self, pdf_content: bytes) -> Dict[str, Any]:
         try:
             logger.info("Iniciando análise do documento CNIS")
-            
-            # Converte conteúdo PDF para base64
-            pdf_base64 = base64.b64encode(pdf_content).decode('utf-8')  
-            inputs = {
-                'conteudo_pdf_base64': pdf_base64
-            }
-            
-            # Executa a crew de forma sequencial
-            result = self.crew.crew().kickoff(inputs=inputs)
-            
+
+            texto_cnis = self._extract_text(pdf_content)
+            logger.info("Texto extraído do CNIS (%d caracteres). Disparando a crew...", len(texto_cnis))
+
+            result = self.crew.crew().kickoff(inputs={'conteudo_cnis': texto_cnis})
+
+            analysis_result = getattr(result, 'pydantic', None)
+            if not isinstance(analysis_result, AnalysisResult):
+                raw = getattr(result, 'raw', result)
+                logger.error("Crew não retornou AnalysisResult validado. Raw: %s", str(raw)[:1000])
+                raise ValueError("Crew não devolveu AnalysisResult validado pelo schema")
+
             logger.info("Análise concluída com sucesso")
-            
             return {
                 "status": "success",
                 "message": "Análise do CNIS realizada com sucesso",
-                "result": result
+                "result": analysis_result,
             }
-        
+
         except Exception as e:
-            logger.error(f"Erro ao analisar CNIS: {str(e)}", exc_info=True)
+            logger.error("Erro ao analisar CNIS: %s", e, exc_info=True)
             return {
                 "status": "error",
                 "message": f"Erro ao processar o documento: {str(e)}",
-                "result": None
+                "result": None,
             }
