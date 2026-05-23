@@ -2,30 +2,33 @@ from pydantic import BaseModel, Field
 from typing import Optional, List
 
 
-class Validacoes(BaseModel):
-    """Resultado das validações realizadas"""
-    cpf_regular: Optional[bool] = None
-    dados_identidade_validos: Optional[bool] = None
-    mensagens_validacao: List[str] = Field(default_factory=list)
+class DadosExtraidos(BaseModel):
+    """Dados básicos extraídos do documento CNIS"""
+    nome: Optional[str] = Field(None, description="Nome do segurado")
+    cpf: Optional[str] = Field(None, description="CPF do segurado")
+    nome_mae: Optional[str] = Field(None, description="Nome da mãe do segurado")
+    total_vinculos: Optional[int] = Field(None, description="Número total de vínculos empregatícios")
+    periodo_inicial: Optional[str] = Field(None, description="Data do vínculo mais antigo")
+    periodo_final: Optional[str] = Field(None, description="Data do vínculo mais recente")
 
 
-class Inconsistencia(BaseModel):
-    """Inconsistência encontrada com grau de confiança"""
-    descricao: str
-    confianca: float = Field(..., ge=0.0, le=1.0)  # Valor entre 0 e 1
-
-
-class Relatorio(BaseModel):
-    """Relatório final com análises jurídica e comum"""
-    sumario_juridico: Optional[str] = None
-    sumario_comum: Optional[str] = None
+class Failure(BaseModel):
+    """Falha ou inconsistência encontrada com detalhes estruturados"""
+    titulo: str = Field(..., description="Título da falha encontrada")
+    severidade: str = Field(..., description="Nível de severidade", pattern="^(ALTA|MEDIA|BAIXA|INFO)$")
+    descricao: str = Field(..., description="Descrição detalhada do problema")
+    sugestaoCorrecao: str = Field(..., description="Sugestão de correção para a falha")
+    confianca: float = Field(..., ge=0.0, le=1.0, description="Nível de confiança entre 0 e 1")
 
 
 class AnalysisResult(BaseModel):
-    """Resultado final mapeado do JSON da crew"""
-    validacoes: Optional[Validacoes] = None
-    inconsistencias: List[Inconsistencia] = Field(default_factory=list)
-    relatorio: Optional[Relatorio] = None
+    """Resultado final da análise estruturado conforme especificação"""
+    titulo: str = Field(..., description="Título geral da análise")
+    descricaoGeral: str = Field(..., description="Descrição geral dos achados")
+    dados_extraidos: Optional[DadosExtraidos] = Field(None, description="Dados básicos extraídos do CNIS")
+    failures: List[Failure] = Field(default_factory=list, description="Lista de falhas encontradas")
+    relatorio_sumario_juridico: Optional[str] = Field(None, description="Análise técnica em linguagem jurídica")
+    sumario: Optional[str] = Field(None, description="Resumo em linguagem acessível para o cidadão")
 
 
 class AnalyzeResponse(BaseModel):
@@ -40,18 +43,27 @@ class AnalyzeResponse(BaseModel):
                 "status": "success",
                 "message": "Análise do CNIS realizada com sucesso",
                 "result": {
-                    "validacoes": {
-                        "cpf_regular": True,
-                        "dados_identidade_validos": True,
-                        "mensagens_validacao": []
+                    "titulo": "Análise do CNIS - Inconsistências Detectadas",
+                    "descricaoGeral": "Foi identificada 1 inconsistência no histórico previdenciário do segurado",
+                    "dados_extraidos": {
+                        "nome": "João da Silva Santos",
+                        "cpf": "123.456.789-01",
+                        "nome_mae": "Maria de Fátima",
+                        "total_vinculos": 5,
+                        "periodo_inicial": "2010-01-15",
+                        "periodo_final": "2023-12-31"
                     },
-                    "inconsistencias": [
-                        {"descricao": "Período sem data de demissão em 2015", "confianca": 0.95}
+                    "failures": [
+                        {
+                            "titulo": "Período sem data de demissão",
+                            "severidade": "ALTA",
+                            "descricao": "Encontrado vínculo empregatício em 2015 sem data de término registrada",
+                            "sugestaoCorrecao": "Solicitar ao empregador confirmação do período final de vínculo",
+                            "confianca": 0.95
+                        }
                     ],
-                    "relatorio": {
-                        "sumario_juridico": "Análise técnica jurídica do documento...",
-                        "sumario_comum": "Resumo claro para o usuário final..."
-                    }
+                    "relatorio_sumario_juridico": "Conforme análise técnica previdenciária, o segurado apresenta lacunas em seu histórico contributivo...",
+                    "sumario": "Detectamos um período de trabalho sem registro de término. Recomendamos entrar em contato com o empregador para regularizar."
                 }
             }
         }
